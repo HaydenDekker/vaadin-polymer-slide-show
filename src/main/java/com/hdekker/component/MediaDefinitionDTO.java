@@ -1,13 +1,13 @@
 package com.hdekker.component;
 
-public class Media {
+public class MediaDefinitionDTO {
 
 	final String url;
 	final String fileName;
 	final String contentType;
 	final Integer duration;
 	
-	public Media(String url, String fileName, String contentType, Integer duration) {
+	public MediaDefinitionDTO(String url, String fileName, String contentType, Integer duration) {
 		super();
 		this.url = url;
 		this.fileName = fileName;

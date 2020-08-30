@@ -26,8 +26,15 @@ class SlideShowManager{
             this.displayerElement.removeChild(this.currentMedia);
     	}
     	var def = this.ssds[slide];
-    	var med = this.media.get(def);
+        var med = this.media.get(def);
+        if(def.contentType.includes("video")){
+				//med.autoplay = true;
+				med.currentTime = 0;
+				med.play();
+        }
+    	
     	this.displayerElement.appendChild(med);
+    	this.currentDef = def;
     	this.currentMedia = med;
     	this.nextSlide = slide;
     }
@@ -38,23 +45,72 @@ class SlideShowManager{
     	return number;
     }
 
+    _setCallBack(){
+        
+        if(this.currentDef.contentType.includes("video")){
+        	// duration could be max slide length
+        	// or just end of video
+            this.currentMedia.onended = () => this.play();
+            this.cancelCallback = () => {
+            	this.currentMedia.onended = null;
+            	this.currentMedia.pause();
+            	// reset the callback handle so
+            	// methods don't need to know if 
+            	// a callback is connected.
+            	this.cancelCallback = ()=>{};
+            }
+        }
+        if(this.currentDef.contentType.includes("image")){
+            // duration set by app. TODO static for now.
+        	var timer = setTimeout(()=> this.play(), 3000);
+        	this.cancelCallback = () => {
+        		clearTimeout(timer);
+        		// reset the callback handle so
+				// methods don't need to know if 
+				// a callback is connected.
+				this.cancelCallback = ()=>{};
+        	}
+        } 
+    }
+
     play(){
         this.slideShowState = "play";
+        this._showSlide(
+    	    this._getNextSlideNumber(this.nextSlide, this.ssds.length));
+        this._setCallBack();
     }
     stop(){
     	this.slideShowState = "stop";
+    	this.nextSlide = 0;
+    	this.cancelCallback();
+    	// clearTimeout(this.currentCallBack);
+    }
+
+    _continue(){
+    	if(this.slideShowState === "play"){
+    		this._setCallBack();
+    	}
     }
 
     back(){
-    	this.slideShowState = "back";
+    	//this.slideShowState = "back";
+    	this.cancelCallback();
+    	this._showSlide(
+    	    this._getPreviousSlideNumber(this.nextSlide, this.ssds.length));
+        this._continue();
     }
+    // skip the slide but continue, either stopped,
+    // or paused.
     forward(){
-    	this.slideShowState = "forward";
+    	// this.slideShowState = "forward";
+    	this.cancelCallback();
     	this._showSlide(
     	    this._getNextSlideNumber(this.nextSlide, this.ssds.length));
+        this._continue();
     }
     pause(){
-    	this.slideShowState = "stop";
+    	this.slideShowState = "pause";
+    	this.cancelCallback();
     }
 
     constructor(definitions, media, displayerElement){
@@ -63,6 +119,7 @@ class SlideShowManager{
     	this.displayerElement = displayerElement;
     	this.nextSlide = 0;
     	this.slideShowState = "stop";
+    	this.cancelCallback = ()=>{};
     }
 
 }
@@ -73,20 +130,35 @@ class SlideShowView extends PolymerElement {
     <style>
       :host {
         display: block;
-        padding: 1em;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+      }
+      #mediaHolder{
+      	height: 100%;
+      	width: 100%;
+      	display: flex;
+        justify-content: center;
+      }
+      .media-vid {
+		max-width: 100%;
+		max-height: 100%;
+	  }
+      .media-img {
+	    max-width: 100%;
+	    max-height: 100%;
       }
      </style>
-      <vaadin-text-field id="name"
-        label="Your name"
-      ></vaadin-text-field>
-      <div id="mediaHolder">Say hello</div>
-      </vaadin-notification>
+      <div id="mediaHolder"></div>
     `;
   }
   
   static get properties() {
 	    return {
-	      imageURLs: {
+	      mediaDefinitions: {
 	        type: Array,
 	        // Observer method identified by name
 	        observer: '_activeChanged'
@@ -107,11 +179,12 @@ class SlideShowView extends PolymerElement {
 				    var img = new Image();
 				    img.onload = () => mediaDefImgMap.set(mediaDef, img);
 				    img.src = mediaDef.url;
+				    img.classList.add("media-img");
 				}else{
                    console.log("Video found " + mediaDef.fileName);
 				   var vid = document.createElement('video');
 				   vid.src = mediaDef.url;
-//vid.autoplay = true;
+                   vid.classList.add("media-vid");
 				   mediaDefImgMap.set(mediaDef, vid); 
 				}
         });
@@ -121,25 +194,34 @@ class SlideShowView extends PolymerElement {
            console.log('mdcChangesd');
            switch(newValue.ssc) {
                 case "forward" :
-                 this.ssManager.forward();
-                 break;
-
+                    this.ssManager.forward();
+                    break;
+                case "back" :
+                    this.ssManager.back();
+                    break;
+                case "pause" :
+                    this.ssManager.pause();
+                    break;
+                case "stop" : 
+				    this.ssManager.stop();
+				    break;
+                case "play" :
+                    this.ssManager.play();
+                    break;
            }
-      	  
       }
 
 	  // Observer method defined as a class method
 	  _activeChanged(newValue, oldValue) {
-		console.log('received will' + this.imageURLs);
+		console.log('received will' + this.mediaDefinitions);
 		this.media = new Map();
 
 		// TODO how can I initialise media semi lazily without
 		// using this horrible function? Maybe SS preloads as needed.
-		this.getMediaForDefinitions(this.media, this.imageURLs);
-	    this.ssManager = new SlideShowManager(this.imageURLs, this.media, this.$.mediaHolder);
+		this.getMediaForDefinitions(this.media, this.mediaDefinitions);
+	    this.ssManager = new SlideShowManager(this.mediaDefinitions, this.media, this.$.mediaHolder);
         console.log(this.media);
-	    // var images = this.imageURLs.map(media => {var img = new Image(); img.src = media.url; return img;});
-	    // this.$.mediaHolder.appendChild(images[0]);
+
 	  }
 
   static get is() {

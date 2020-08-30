@@ -6,8 +6,8 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 public interface SSModel extends TemplateModel{
 
-	public List<Media> getImageURLs();
-	public void setImageURLs(List<Media> imageURLs);
+	public List<MediaDefinitionDTO> getMediaDefinitions();
+	public void setMediaDefinitions(List<MediaDefinitionDTO> mediaDefinitions);
 	public MediaControlEvent getMDC();
 	public void setMDC(MediaControlEvent event);
 	
