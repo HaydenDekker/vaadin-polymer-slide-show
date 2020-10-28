@@ -36,7 +36,11 @@ import com.hdekker.views.about.AboutView;
 @CssImport("./styles/views/main/main-view.css")
 public class MainView extends AppLayout {
 
-    private final Tabs menu;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final Tabs menu;
     private H1 viewTitle;
 
     public MainView() {

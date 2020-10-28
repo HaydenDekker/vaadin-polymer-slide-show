@@ -6,4 +6,9 @@ import com.vaadin.flow.router.Route;
 @Route("media-display-controller")
 public class MediaSSDisplayController extends VerticalLayout{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 }

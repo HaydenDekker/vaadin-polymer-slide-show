@@ -1,5 +1,10 @@
 package com.hdekker.component;
-
+/**
+ * Duration not implemented.
+ * 
+ * @author HDekker
+ *
+ */
 public class MediaDefinitionDTO {
 
 	final String url;

@@ -18,7 +18,9 @@ public interface MediaManagementUtils {
 	    }
 	    
 	    static Function<StreamResource, StreamRegistration> registerResource(StreamResourceRegistry reg){
-	    	return res -> reg.registerResource(res);
+	    	return res -> {
+	    		return reg.registerResource(res);
+	    	};
 	    	
 	    }
 

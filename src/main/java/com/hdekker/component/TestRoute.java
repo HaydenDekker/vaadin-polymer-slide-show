@@ -18,6 +18,11 @@ import com.vaadin.flow.server.VaadinSession;
 @Route("test-route")
 public class TestRoute extends VerticalLayout implements AfterNavigationObserver{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Autowired
 	TestMediaConfig config;
 	

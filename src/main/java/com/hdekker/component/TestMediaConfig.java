@@ -2,9 +2,6 @@ package com.hdekker.component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

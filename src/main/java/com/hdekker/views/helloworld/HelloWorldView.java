@@ -1,6 +1,5 @@
 package com.hdekker.views.helloworld;
 
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.Tag;
@@ -22,7 +21,12 @@ import com.vaadin.flow.templatemodel.TemplateModel;import com.hdekker.views.main
 @Tag("hello-world-view")
 public class HelloWorldView extends PolymerTemplate<TemplateModel> {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     private TextField name;
 
     @Id

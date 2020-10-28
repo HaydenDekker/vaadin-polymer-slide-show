@@ -20,7 +20,12 @@ public class AboutView extends PolymerTemplate<AboutViewModel> {
     // You can find the design file in /frontend/src/views/src/views/about/about-view.js
     // The design can be easily edited by using Vaadin Designer (vaadin.com/designer)
 
-    public static interface AboutViewModel extends TemplateModel {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static interface AboutViewModel extends TemplateModel {
     }
 
     public AboutView() {
